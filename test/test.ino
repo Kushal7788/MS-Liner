@@ -1,5 +1,5 @@
 const int pwm_1 = 9;
-int left1 = 8, left2 = 9, right1 = 10, right2 = 11;
+int left1 = 2, left2 = 3, right1 = 5, right2 = 6;
 void motor_control()
 {
 
@@ -7,8 +7,8 @@ void motor_control()
   digitalWrite(left2, LOW);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
-  analogWrite(3, 245 );
-  analogWrite(5, 250 );
+  analogWrite(4, 245 );
+  analogWrite(7, 250 );
 
 }
 void setup() {
