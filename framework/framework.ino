@@ -5,7 +5,7 @@
 #define right1 10
 #define right2 11
 int count, vflag = 0;
-int lcorr = 0, rcorr = 0; // Add zero error if required here
+int lcorr = 30, rcorr = 0; // Add zero error if required here
 int left, right;          // Give the base pwm here
 int ltval = left + lcorr; //These are for total value considering the corrected val
 int rtval = right + rcorr;
@@ -185,7 +185,7 @@ void vrturn()   //V shape right turn
     }
   }
 }
-void vlturn()   //V shape right turn
+void vlturn()   //V shape left turn
 {
   sensor1 = PINC;
   if ((sensor1 | B00011000) == B10011000 || (sensor1 | B00011000) == B11011000)
@@ -230,8 +230,10 @@ void turn() //turn when found junction
 }
 void loop() {
   // put your main code here, to run repeatedly:
+  forward();
+  //adjust();
   sensor1 = PINC;
-  Serial.println(sensor1);
-  delay(500);
+  Serial.println(PINC, BIN);
+
 
 }
