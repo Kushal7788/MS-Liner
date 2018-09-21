@@ -1,12 +1,20 @@
-#define lpwm 3
-#define left1 4
-#define left2 5
-#define rpwm 9
-#define right1 10
-#define right2 11
+#define lpwm 7
+#define left1 5
+#define left2 6
+#define rpwm 4
+#define right1 3
+#define right2 2
+#define maxpwm 210
+#define slturn 80
+#define sladj 15
+#define mdadj 25
+#define hdadj 40
+#define turn 200
+#define minpwm 80
+#define reading
 int count, vflag = 0;
-int lcorr = 30, rcorr = 0; // Add zero error if required here
-int left, right;          // Give the base pwm here
+int lcorr = -30, rcorr = 0; // Add zero error if required here
+int left = 0, right = 0;      // Give the base pwm here
 int ltval = left + lcorr; //These are for total value considering the corrected val
 int rtval = right + rcorr;
 uint8_t sensor1;    //For cytron
@@ -23,125 +31,223 @@ void setup() {
 }
 void forward()
 {
+#ifdef reading
+  Serial.println("In Forward");
+#endif
   digitalWrite(left1, HIGH);
   digitalWrite(left2, LOW);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
+  Serial.println("forward");
+  left = right = maxpwm;
 
-  left = 220;
-  right = 220;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
 void sleft()          //slight left
 {
+#ifdef reading
+  Serial.println("In slight left adj");
+#endif
   digitalWrite(left1, HIGH);
   digitalWrite(left2, LOW);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
 
-  left = 220;
-  right = 250;
+  left = maxpwm - sladj;
+  right = maxpwm + sladj;
+  analogWrite(lpwm, ltval);
+  analogWrite(rpwm, rtval);
+}
+void hleft()          //slight left
+{
+#ifdef reading
+  Serial.println("In hard left adj");
+#endif
+  digitalWrite(left1, HIGH);
+  digitalWrite(left2, LOW);
+  digitalWrite(right1, HIGH);
+  digitalWrite(right2, LOW);
+
+  left = maxpwm - hdadj;
+  right = maxpwm + hdadj;
+  analogWrite(lpwm, ltval);
+  analogWrite(rpwm, rtval);
+}
+void mleft()          //slight left
+{
+#ifdef reading
+  Serial.println("In med left adj");
+#endif
+  digitalWrite(left1, HIGH);
+  digitalWrite(left2, LOW);
+  digitalWrite(right1, HIGH);
+  digitalWrite(right2, LOW);
+
+  left = maxpwm - mdadj;
+  right = maxpwm + mdadj;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
 void sright()     //slight right
 {
+#ifdef reading
+  Serial.println("In slight right adj");
+#endif
   digitalWrite(left1, HIGH);
   digitalWrite(left2, LOW);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
 
-  left = 250;
-  right = 220;
+  left = maxpwm + sladj;
+  right = maxpwm - sladj;
+  analogWrite(lpwm, ltval);
+  analogWrite(rpwm, rtval);
+}
+void hright()     //slight right
+{
+#ifdef reading
+  Serial.println("In hard right adj");
+#endif
+  digitalWrite(left1, HIGH);
+  digitalWrite(left2, LOW);
+  digitalWrite(right1, HIGH);
+  digitalWrite(right2, LOW);
+
+  left = maxpwm + hdadj;
+  right = maxpwm - hdadj;
+  analogWrite(lpwm, ltval);
+  analogWrite(rpwm, rtval);
+}
+void mright()     //slight right
+{
+#ifdef reading
+  Serial.println("In med right adj");
+#endif
+  digitalWrite(left1, HIGH);
+  digitalWrite(left2, LOW);
+  digitalWrite(right1, HIGH);
+  digitalWrite(right2, LOW);
+
+  left = maxpwm + mdadj;
+  right = maxpwm - mdadj;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
 void back()
 {
+#ifdef reading
+  Serial.println("In Forward");
+#endif
   digitalWrite(left1, LOW);
   digitalWrite(left2, HIGH);
   digitalWrite(right1, LOW);
   digitalWrite(right2, HIGH);
 
-  left = 220;
-  right = 220;
+  left = maxpwm;
+  right = maxpwm;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
 void lturn()      //left turn
 {
+#ifdef reading
+  Serial.println("In left turn");
+#endif
   digitalWrite(left1, LOW);
   digitalWrite(left2, HIGH);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
 
-  left = 220;
-  right = 220;
+  left = right = turn;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
 void rturn()      //right turn
 {
+#ifdef reading
+  Serial.println("In right turn");
+#endif
   digitalWrite(left1, HIGH);
   digitalWrite(left2, LOW);
   digitalWrite(right1, LOW);
   digitalWrite(right2, HIGH);
 
-  left = 220;
-  right = 220;
+  left = right = turn;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
 
-void srturn()      //right turn
+void srtturn()      //right turn
 {
+#ifdef reading
+  Serial.println("In slow right turn");
+#endif
   digitalWrite(left1, HIGH);
   digitalWrite(left2, LOW);
   digitalWrite(right1, LOW);
   digitalWrite(right2, HIGH);
 
-  left = 80;
-  right = 80;
+  left = right = slturn;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
-void slturn()      //left turn
+void slfturn()      //left turn
 {
+#ifdef reading
+  Serial.println("In slow left turn");
+#endif
   digitalWrite(left1, LOW);
   digitalWrite(left2, HIGH);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
 
-  left = 80;
-  right = 80;
+  left = right = slturn;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
 void slforward()    //slow forward
 {
+#ifdef reading
+  Serial.println("In slow forward");
+#endif
   digitalWrite(left1, HIGH);
   digitalWrite(left2, LOW);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
 
-  left = 140;
-  right = 140;
+  left = right = minpwm;
   analogWrite(lpwm, ltval);
   analogWrite(rpwm, rtval);
 }
 void adjust()
 {
   sensor1 = PINC;
-  if ((sensor1 | B00011000) == B00111000 || (sensor1 | B00011000) == B01111000 || (sensor1 | B00011000) == B11111000 || (sensor1 | B11011000) == B11011000 || (sensor1 | B11011000) == B10011000) // adjust left
+  if ( sensor1 == B00010000  ) // adjust left
   {
     sleft();
   }
-  else if ((sensor1 | B00011000) == B00011100 || (sensor1 | B00011000) == B00011110 || (sensor1 | B00011000) == B00011111 || (sensor1 | B11011000) == B00011011 || (sensor1 | B11011000) == B00011001) // adjust right
+  else if (sensor1 == B00100000 || sensor1 == B00110000 ) // adjust med left
+  {
+    mleft();
+  }
+    else if (sensor1 == B00100000 || sensor1 == B00110000 ) // adjust med left
+  {
+    mright();
+  }
+  else if (sensor1 == B00001000 ) // adjust right
   {
     sright();
   }
-  else if (sensor1 == B00000000)    //When Line is not there
+  else if (sensor1 == B01100000 || sensor1 == B01000000) // hard left adjust
+  {
+    hleft();
+  }
+  else if (sensor1 == B00000110 || sensor1 == B00000010) // hard right adjust
+  {
+    hright();
+  }
+  else if (sensor1 == B00000000 || sensor1 == B00011000)  //When Line is not there
   {
     forward();
   }
@@ -177,11 +283,11 @@ void vrturn()   //V shape right turn
   {
     if ((sensor1 | B00011000) == B00111000 || (sensor1 | B00011000) == B01111000 || (sensor1 | B00011000) == B11111000 || (sensor1 | B11011000) == B11011000 || (sensor1 | B11011000) == B10011000) // adjust left
     {
-      slturn();
+      slfturn();
     }
     else if ((sensor1 | B00011000) == B00011100 || (sensor1 | B00011000) == B00011110 || (sensor1 | B00011000) == B00011111 || (sensor1 | B11011000) == B00011011 || (sensor1 | B11011000) == B00011001) // adjust right
     {
-      srturn();
+      srtturn();
     }
   }
 }
@@ -207,15 +313,15 @@ void vlturn()   //V shape left turn
   {
     if ((sensor1 | B00011000) == B00111000 || (sensor1 | B00011000) == B01111000 || (sensor1 | B00011000) == B11111000 || (sensor1 | B11011000) == B11011000 || (sensor1 | B11011000) == B10011000) // adjust left
     {
-      slturn();
+      slfturn();
     }
     else if ((sensor1 | B00011000) == B00011100 || (sensor1 | B00011000) == B00011110 || (sensor1 | B00011000) == B00011111 || (sensor1 | B11011000) == B00011011 || (sensor1 | B11011000) == B00011001) // adjust right
     {
-      srturn();
+      srtturn();
     }
   }
 }
-void turn() //turn when found junction
+void rotate() //turn when found junction
 {
   if (((sensor1 | B10000000) == B11111000) || ((sensor1 | B10000000) == B11110000)) //turn left
   {
@@ -229,11 +335,17 @@ void turn() //turn when found junction
   }
 }
 void loop() {
+
+  ltval = left + lcorr; //These are for total value considering the corrected val
+  rtval = right + rcorr;
   // put your main code here, to run repeatedly:
-  forward();
-  //adjust();
+
+  //forward();
+  adjust();
+  rotate();
   sensor1 = PINC;
   Serial.println(PINC, BIN);
+
 
 
 }
