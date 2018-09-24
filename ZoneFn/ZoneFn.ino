@@ -4,20 +4,20 @@
 #define rpwm 4
 #define right1 3
 #define right2 2
-#define maxpwm 200
+#define maxpwm 215
 #define slturn 130
-#define sladj 75
-#define mdadj 80
-#define hdadj 110
+#define sladj 55
+#define mdadj 70
+#define hdadj 100
 #define turn 150
 #define minpwm 120
-#define bkpwm 130
+#define bkpwm 120
 #define reading
-#define zone1
-#define rezone1
-#define zone2
+#define zone1 12
+#define rezone1 11
+#define zone2 10
 
-bool ph = false, lrotate = false, rrotate = false;
+bool ph = false, phaseflag = false, rotateflag = false;
 int count = 0, countlturn = 0, countrturn = 0;
 int lcorr = -35, rcorr = 0; // Add zero error if required here
 int left = 0, right = 0;      // Give the base pwm here
@@ -257,22 +257,33 @@ void adjust()
   {
     hright();
   }
-  else if (sensor1 == B00000000 || sensor1 == B00011000)  //When Line is not there
+  else if (sensor1 == B00011000)  //When Line is not there
   {
     forward();
+  }
+  else if (sensor1 == B00000000 )
+  {
+    forward();
+    rotateflag = true;
   }
 }
 void phase()    //call when black line comes on white surface
 {
   sensor1 = PINC;
-  if (((sensor1 | B00100100) == B11100111 || (sensor1 | B00100100) == B11110111 || (sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011 || (sensor1 | B00110000) == B11111011 || (sensor1 | B00001100) == B11001111 || (sensor1 | B00001100) == B11011111))  //when Black on White OFF
+  if (((sensor1 | B00100100) == B11100111 || (sensor1 | B00100100) == B11110111 || (sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011 || (sensor1 | B00110000) == B11111011 || (sensor1 | B00001100) == B11001111 || (sensor1 | B00001100) == B11011111) || (sensor1 | B01111000) == B11111001) || (sensor1 | B00011110) == B10011111)) //when Black on White OFF
   {
     sensor1 = ~sensor1;
-    adjust();
     ph = true;
   }
   else
-    ph = false;
+  {
+    if (ph == true)
+    {
+      delay(350);
+      ph = false;
+    }
+    phaseflag = false;
+  }
 }
 //void vrturn()   //V shape right turn
 //{
@@ -345,6 +356,11 @@ void rotatezone1() //turn when found junction
       sensor1 = PINC;
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st left");
+      if (((sensor1 | B00100100) == B11100111 || (sensor1 | B00100100) == B11110111 || (sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011 || (sensor1 | B00110000) == B11111011 || (sensor1 | B00001100) == B11001111 || (sensor1 | B00001100) == B11011111) || (sensor1 | B01111000) == B11111001) || (sensor1 | B00011110) == B10011111))
+      {
+        phaseflag = true;
+        break;
+      }
     }
     if (sensor1 == B0000000)          // Check if there is line forward when encounted jucntion
     {
@@ -380,6 +396,11 @@ void rotatezone1() //turn when found junction
       sensor1 = PINC;
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st right");
+      if (((sensor1 | B00100100) == B11100111 || (sensor1 | B00100100) == B11110111 || (sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011 || (sensor1 | B00110000) == B11111011 || (sensor1 | B00001100) == B11001111 || (sensor1 | B00001100) == B11011111) || (sensor1 | B01111000) == B11111001) || (sensor1 | B00011110) == B10011111))
+      {
+        phaseflag = true;
+        break;
+      }
     }
     if (sensor1 == B0000000)          // Check if there is line forward when encounted jucntion
     {
@@ -419,6 +440,11 @@ void rotate() //turn when found junction
       sensor1 = PINC;
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st left");
+      if (((sensor1 | B00100100) == B11100111 || (sensor1 | B00100100) == B11110111 || (sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011 || (sensor1 | B00110000) == B11111011 || (sensor1 | B00001100) == B11001111 || (sensor1 | B00001100) == B11011111) || (sensor1 | B01111000) == B11111001) || (sensor1 | B00011110) == B10011111))
+      {
+        phaseflag = true;
+        break;
+      }
     }
     while (((sensor1 | B00111111) != B11111111))
     {
@@ -441,8 +467,6 @@ void rotate() //turn when found junction
       sensor1 = PINC;
       Serial.println(sensor1, BIN);
       Serial.println("In 4 th left");
-      lrotate = true;
-
     }
   }
   else if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111)) //turn right
@@ -453,6 +477,11 @@ void rotate() //turn when found junction
       sensor1 = PINC;
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st right");
+      if (((sensor1 | B00100100) == B11100111 || (sensor1 | B00100100) == B11110111 || (sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011 || (sensor1 | B00110000) == B11111011 || (sensor1 | B00001100) == B11001111 || (sensor1 | B00001100) == B11011111) || (sensor1 | B01111000) == B11111001) || (sensor1 | B00011110) == B10011111))
+      {
+        phaseflag = true;
+        break;
+      }
     }
     while (((sensor1 | B11111100) != B11111111))
     {
@@ -475,82 +504,24 @@ void rotate() //turn when found junction
       sensor1 = PINC;
       Serial.println(sensor1, BIN);
       Serial.println("In 4th right");
-      rrotate = true;
     }
   }
 }
 void loop() {
-
-  // put your main code here, to run repeatedly:
-  //ZONE 1
-  if (zone1 == HIGH)
+  phase();
+  adjust();
+  if (rotateflag == true)
   {
-    if (ph == false)
-      adjust();
-    else
-      phase();
-    rotatezone1
-  }
-  else if (rezone1 == HIGH)
-  {
-    adjust();
-    rotatezone1();
-  }
-  if (zone2 == HIGH)
-  {
-    adjust();
-    if (countlturn == 1 && countrturn != 2)
+    if (phaseflag == false)
     {
-      rrotate = false;
       rotate();
-      if (rrotate == true)
-      {
-        countrturn++;
-      }
-    }
-    else if (countlturn == 1 && countrturn == 2)
-    {
-      lrotate = false;
-      //left turn only
-      if (lrotate == true)
-      {
-        countlturn++;
-        lrotate = false;
-      }
-
-    }
-    else if (countlturn == 2 && countrturn == 2)
-    {
-      rrotate = false;
-      rotate();
-      if (rrotate == true)
-      {
-        countrturn++;
-      }
-    }
-    else if (countlturn == 2 && countrturn == 3)
-    {
-      lrotate = false;
-      //left turn only
-      if (lrotate == true)
-      {
-        countlturn++;
-        lrotate = false;
-      }
-
-    }
-    else
-      rotate();
-    if (lrotate == true)
-    {
-      countlturn++;
-      lrotate = false;
     }
   }
-  //break zone 2 after doing all turns
-  sensor1 = PINC;
-  Serial.println(PINC, BIN);
-
-
-
+  else
+  {
+    if (phaseflag == false)
+    {
+      rotatezone1();
+    }
+  }
 }
