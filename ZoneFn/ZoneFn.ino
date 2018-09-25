@@ -234,7 +234,6 @@ void slforward()    //slow forward
 }
 void adjust()
 {
-  sensor1 = PINC;
   if ( sensor1 == B00010000 || sensor1 == B00110000 ) // adjust slight left
   {
     sleft();
@@ -278,6 +277,7 @@ void phase()    //call when black line comes on white surface
     ph = true;
     adjust();
     Serial.println("in Phase");
+    Serial.println(sensor1, BIN);
   }
   else
   {
@@ -543,7 +543,10 @@ void loop() {
   {
     Serial.println("In zone 1");
     phase();
-    adjust();
+    if (phaseflag == false)
+    {
+      adjust();
+    }
     if (lrotate == false)
     {
       rotate();
@@ -567,7 +570,10 @@ void loop() {
   {
     Serial.println("In rezone");
     phase();
-    adjust();
+    if (phaseflag == false)
+    {
+      adjust();
+    }
     if (rotateflag == true)
     {
       if (phaseflag == false)
@@ -586,7 +592,10 @@ void loop() {
   else if (digitalRead(turnlast) == LOW) //use for rotate if no line
   {
     phase();
-    adjust();
+    if (phaseflag == false)
+    {
+      adjust();
+    }
     if (phaseflag == false)
     {
       rotatezone1();
@@ -596,7 +605,10 @@ void loop() {
   else if (digitalRead(turnall) == LOW) // use for rotate when junction is present
   {
     phase();
-    adjust();
+    if (phaseflag == false)
+    {
+      adjust();
+    }
     if (phaseflag == false)
     {
       rotate();
