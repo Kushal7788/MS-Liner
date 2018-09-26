@@ -24,7 +24,7 @@
 
 bool ph = false, phaseflag = false, rotateflag = false, lrotate = false, llrotate = false;
 int count = 0, countlturn = 0, countrturn = 0;
-int lcorr = -39, rcorr = 4; // Add zero error if required here
+int lcorr = 0, rcorr = 18; // Add zero error if required here
 int left = 0, right = 0;      // Give the base pwm here
 int ltval = left + lcorr; //These are for total value considering the corrected val
 int rtval = right + rcorr;
@@ -283,6 +283,8 @@ void phase()    //call when black line comes on white surface
   {
     sensor1 = ~sensor1;
     ph = true;
+    lcorr = 0;
+    rcorr = 18;
     adjust();
     Serial.println("in Phase");
     Serial.println(sensor1, BIN);
@@ -296,6 +298,8 @@ void phase()    //call when black line comes on white surface
       ph = false;
     }
     phaseflag = false;
+    lcorr = -38;
+    rcorr = 4;
   }
 }
 //void vrturn()   //V shape right turn
@@ -856,10 +860,8 @@ void loop() {
   }
   else
   {
-    sensor1 = PINC;
     lrotate = false;
     forward();
-    leftrotate();
     Serial.println(sensor1, BIN);
     Serial.println("In else");
   }// return from junctions cases now begins----------------------------------------------------------------------------//////////////////
