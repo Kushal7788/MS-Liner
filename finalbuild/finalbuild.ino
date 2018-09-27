@@ -11,8 +11,9 @@
 #define hdadj 95
 #define turn 150
 #define minpwm 120
-#define bkpwm 120
-//#define reading
+#define bkpwm 130
+#define reading
+//#define jumper
 #define lastck 13
 #define ckinzone1 A2
 #define zone1 11
@@ -58,7 +59,6 @@ void forward()
   digitalWrite(left2, LOW);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
-  Serial.println("forward");
   left = right = maxpwm;
 
   analogWrite(lpwm, left + lcorr);
@@ -83,12 +83,12 @@ void hleft()          //slight left
 {
 #ifdef reading
   Serial.println("In hard left adj");
-
+#endif
   digitalWrite(left1, HIGH);
   digitalWrite(left2, LOW);
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
-#endif
+
   left = maxpwm - hdadj;
   right = maxpwm;
   analogWrite(lpwm, left + lcorr);
@@ -251,7 +251,7 @@ void adjust()
   {
     mleft();
   }
-  else if ( sensor1 == B01000000 || sensor1 == B11000000) // hard left adjust
+  else if ( sensor1 == B01000000 || sensor1 == B11000000 || sensor1 == B10000000) // hard left adjust
   {
     hleft();
   }
@@ -263,7 +263,7 @@ void adjust()
   {
     mright();
   }
-  else if ( sensor1 == B00000010 || sensor1 == B00000011) // hard right adjust
+  else if ( sensor1 == B00000010 || sensor1 == B00000011 || sensor1 == B00000001) // hard right adjust
   {
     hright();
   }
@@ -296,6 +296,7 @@ void phase()    //call when black line comes on white surface
   {
     lcorr = -38;
     rcorr = 4;
+    delay(100);
     if (lalwaysflag == true)
     {
       if ((sensor1 | B10000001) == B10000001)
@@ -387,14 +388,16 @@ void leftalways()
 void leftrotate()
 {
   sensor1 = PINC;
-  if (((sensor1 | B00000000) == B11111000) || ((sensor1 | B00000000) == B11110000) || ((sensor1 | B00000000) == B11111100) || ((sensor1 | B00000000) == B11100000) || ((sensor1 | B00000000) == B01111000)) //turn left
+  if (((sensor1 | B00000000) == B11111000) || ((sensor1 | B00000000) == B11110000) || ((sensor1 | B00000000) == B11111100) || ((sensor1 | B00000000) == B11100000) || ((sensor1 | B00000000) == B01111000) || ((sensor1 | B00000000) == B01110000)) //turn left
   {
     while (((sensor1 | B00111111) != B00111111))
     {
       slforward();
       sensor1 = PINC;
+#ifdef reading
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st left rotate");
+#endif
       if (((sensor1 | B00100100) == B11100111) || ((sensor1 | B00100100) == B11110111) || ((sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011) || ((sensor1 | B00110000) == B11111011) || ((sensor1 | B00001100) == B11001111) || ((sensor1 | B00001100) == B11011111) || ((sensor1 | B01111000) == B11111001) || ((sensor1 | B00011110) == B10011111))
       {
         phaseflag = true;
@@ -407,23 +410,29 @@ void leftrotate()
       {
         back();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 2 nd left rotate");
+#endif
       }
       while ((sensor1 | B00111111) != B00111111)
       {
         slfturn();
         //slforward();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 3 rd left rotate");
+#endif
       }
       while ((sensor1 | B00000001) != B00001101)
       {
         slfturn();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 4 th left rotate");
+#endif
         lrotate = true;
         llrotate = true;
       }
@@ -432,14 +441,16 @@ void leftrotate()
 }
 void rightrotate()
 {
-  if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111) || ((sensor1 | B00000000) == B00011110)) //turn right
+  if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111) || ((sensor1 | B00000000) == B00011110) || ((sensor1 | B00000000) == B00001110)) //turn right
   {
     while (((sensor1 | B11111100) != B11111100))
     {
       slforward();
       sensor1 = PINC;
+#ifdef reading
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st right rotate");
+#endif
       if (((sensor1 | B00100100) == B11100111) || ((sensor1 | B00100100) == B11110111) || ((sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011) || ((sensor1 | B00110000) == B11111011) || ((sensor1 | B00001100) == B11001111) || ((sensor1 | B00001100) == B11011111) || ((sensor1 | B01111000) == B11111001) || ((sensor1 | B00011110) == B10011111))
       {
         phaseflag = true;
@@ -452,23 +463,29 @@ void rightrotate()
       {
         back();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 2 nd right rotate");
+#endif
       }
       while ((sensor1 | B11111100) != B11111100)
       {
         srtturn();
         //slforward();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 3 rd right rotate");
+#endif
       }
       while ((sensor1 | B10000000) != B10110000)
       {
         srtturn();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 4th right rotate");
+#endif
         rrotate = true;
         rrrotate = true;
       }
@@ -477,14 +494,16 @@ void rightrotate()
 }
 void cosrightrotate()
 {
-  if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111) || ((sensor1 | B00000000) == B00011110)) //turn right
+  if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111) || ((sensor1 | B00000000) == B00011110) || ((sensor1 | B00000000) == B00001110)) //turn right
   {
     while (((sensor1 | B11111000) != B11111000))
     {
       slforward();
       sensor1 = PINC;
+#ifdef reading
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st right cos");
+#endif
       if (((sensor1 | B00100100) == B11100111) || ((sensor1 | B00100100) == B11110111) || ((sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011) || ((sensor1 | B00110000) == B11111011) || ((sensor1 | B00001100) == B11001111) || ((sensor1 | B00001100) == B11011111) || ((sensor1 | B01111000) == B11111001) || ((sensor1 | B00011110) == B10011111))
       {
         phaseflag = true;
@@ -497,38 +516,48 @@ void cosrightrotate()
       {
         back();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 2 nd right cos");
+#endif
       }
       while (((sensor1 | B11111100) != B11111100))
       {
         back();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 3 rd right cos");
+#endif
       }
       while (((sensor1 | B11111000) != B11111111))
       {
         back();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 4 th right cos");
+#endif
       }
       while ((sensor1 | B11111100) != B11111100)
       {
         srtturn();
         //slforward();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 5 th right cos");
+#endif
       }
       while ((sensor1 | B10000000) != B10110000)
       {
         srtturn();
         sensor1 = PINC;
+#ifdef reading
         Serial.println("yay im in right");
         Serial.println(sensor1, BIN);
         Serial.println("In 6th right cos");
+#endif
       }
     }
   }
@@ -536,13 +565,15 @@ void cosrightrotate()
 void rotatezone1() //turn when found junction
 {
   sensor1 = PINC;
-  if (((sensor1 | B00000000) == B11111000) || ((sensor1 | B00000000) == B11110000) || ((sensor1 | B00000000) == B11111100) || ((sensor1 | B00000000) == B11100000) || ((sensor1 | B00000000) == B01111000)) //turn left
+  if (((sensor1 | B00000000) == B11111000) || ((sensor1 | B00000000) == B11110000) || ((sensor1 | B00000000) == B11111100) || ((sensor1 | B00000000) == B11100000) || ((sensor1 | B00000000) == B01111000) || ((sensor1 | B00000000) == B01110000)) //turn left
   {
     while (((sensor1 | B00001111) != B00001111))
     {
       slforward();
+#ifdef reading
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st left of rotate at last");
+#endif
       sensor1 = PINC;
       if (((sensor1 | B00100100) == B11100111) || ((sensor1 | B00100100) == B11110111) || ((sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011) || ((sensor1 | B00110000) == B11111011) || ((sensor1 | B00001100) == B11001111) || ((sensor1 | B00001100) == B11011111) || ((sensor1 | B01111000) == B11111001) || ((sensor1 | B00011110) == B10011111))
       {
@@ -566,27 +597,33 @@ void rotatezone1() //turn when found junction
       {
         back();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 2 nd left last");
+#endif
       }
       while ((sensor1 | B00111111) != B00111111)
       {
         slfturn();
         //slforward();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 3 rd left last");
+#endif
       }
       while ((sensor1 | B00000001) != B00001101)
       {
         slfturn();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 4 th left last");
+#endif
       }
     }
   }
-  else if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111) || ((sensor1 | B00000000) == B00011110)) //turn right
+  else if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111) || ((sensor1 | B00000000) == B00011110) || ((sensor1 | B00000000) == B00001110)) //turn right
   {
     if ((sensor1 | B10011001) == B11111111)
     {
@@ -598,8 +635,10 @@ void rotatezone1() //turn when found junction
       {
         slforward();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 1 st  right of rotate at last..");
+#endif
         if (((sensor1 | B00100100) == B11100111) || ((sensor1 | B00100100) == B11110111) || ((sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011) || ((sensor1 | B00110000) == B11111011) || ((sensor1 | B00001100) == B11001111) || ((sensor1 | B00001100) == B11011111) || ((sensor1 | B01111000) == B11111001) || ((sensor1 | B00011110) == B10011111))
         {
           phaseflag = true;
@@ -622,23 +661,29 @@ void rotatezone1() //turn when found junction
         {
           back();
           sensor1 = PINC;
+#ifdef reading
           Serial.println(sensor1, BIN);
           Serial.println("In 2 nd right last");
+#endif
         }
         while ((sensor1 | B11111100) != B11111100)
         {
           srtturn();
           //slforward();
           sensor1 = PINC;
+#ifdef reading
           Serial.println(sensor1, BIN);
           Serial.println("In 3 rd right last");
+#endif
         }
         while ((sensor1 | B10000000) != B10110000)
         {
           srtturn();
           sensor1 = PINC;
+#ifdef reading
           Serial.println(sensor1, BIN);
           Serial.println("In 4th right last");
+#endif
         }
       }
     }
@@ -648,14 +693,16 @@ void rotatezone1() //turn when found junction
 void rotate() //turn when found junction
 {
   sensor1 = PINC;
-  if (((sensor1 | B00000000) == B11111000) || ((sensor1 | B00000000) == B11110000) || ((sensor1 | B00000000) == B11111100) || ((sensor1 | B00000000) == B11100000) || ((sensor1 | B00000000) == B01111000)) //turn left
+  if (((sensor1 | B00000000) == B11111000) || ((sensor1 | B00000000) == B11110000) || ((sensor1 | B00000000) == B11111100) || ((sensor1 | B00000000) == B11100000) || ((sensor1 | B00000000) == B01111000) || ((sensor1 | B00000000) == B01110000)) //turn left
   {
     while (((sensor1 | B00111111) != B00111111))
     {
       slforward();
       sensor1 = PINC;
+#ifdef reading
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st left");
+#endif
       if (((sensor1 | B00100100) == B11100111) || ((sensor1 | B00100100) == B11110111) || ((sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011) || ((sensor1 | B00110000) == B11111011) || ((sensor1 | B00001100) == B11001111) || ((sensor1 | B00001100) == B11011111) || ((sensor1 | B01111000) == B11111001) || ((sensor1 | B00011110) == B10011111))
       {
         phaseflag = true;
@@ -668,35 +715,43 @@ void rotate() //turn when found junction
       {
         back();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 2 nd left");
+#endif
       }
       while ((sensor1 | B00111111) != B00111111)
       {
         slfturn();
         //slforward();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 3 rd left");
+#endif
       }
       while ((sensor1 | B00000001) != B00001101)
       {
         slfturn();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 4 th left");
+#endif
         lrotate = true;
       }
     }
   }
-  else if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111) || ((sensor1 | B00000000) == B00011110)) //turn right
+  else if (((sensor1 | B00000000) == B00011111) || ((sensor1 | B00000000) == B00001111) || ((sensor1 | B00000000) == B00111111) || ((sensor1 | B00000000) == B00000111) || ((sensor1 | B00000000) == B00011110) || ((sensor1 | B00000000) == B00001110)) //turn right
   {
     while (((sensor1 | B11111100) != B11111100))
     {
       slforward();
       sensor1 = PINC;
+#ifdef reading
       Serial.println(sensor1, BIN);
       Serial.println("In 1 st right");
+#endif
       if (((sensor1 | B00100100) == B11100111) || ((sensor1 | B00100100) == B11110111) || ((sensor1 | B00100100) == B11101111) || ((sensor1 | B00110000) == B11110011) || ((sensor1 | B00110000) == B11111011) || ((sensor1 | B00001100) == B11001111) || ((sensor1 | B00001100) == B11011111) || ((sensor1 | B01111000) == B11111001) || ((sensor1 | B00011110) == B10011111))
       {
         phaseflag = true;
@@ -709,29 +764,36 @@ void rotate() //turn when found junction
       {
         back();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 2 nd right");
+#endif
       }
       while ((sensor1 | B11111100) != B11111100)
       {
         srtturn();
         //slforward();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 3 rd right");
+#endif
       }
       while ((sensor1 | B10000000) != B10110000)
       {
         srtturn();
         sensor1 = PINC;
+#ifdef reading
         Serial.println(sensor1, BIN);
         Serial.println("In 4th right");
+#endif
         rrotate = true;
       }
     }
   }
 }
 void loop() {
+#ifdef jumper
   Serial.print(digitalRead(turnall));
   Serial.print(digitalRead(turnlast));
   Serial.print(digitalRead(rezone1));
@@ -743,11 +805,12 @@ void loop() {
   Serial.println(digitalRead(ckinzone1));
   Serial.print(lcorr);
   Serial.println(rcorr);
+#endif
 
   if (digitalRead(zone1) == LOW)        // will run initially at starting
   {
     //pin 11
-    Serial.println("In zone 1");
+#define reading Serial.println("In zone 1");#endif
     phase();
     if (phaseflag == false)
     {
@@ -755,14 +818,14 @@ void loop() {
     }
     if (rrotate == false)
     {
-      Serial.println("IN rotate right");
+#define reading Serial.println("IN rotate right");#endif
       rotate();
     }
     else if (rotateflag == true)
     {
       if (phaseflag == false)
       {
-        Serial.println("IN rotate after all 0");
+#define reading  Serial.println("IN rotate after all 0");#endif
         rotate();
       }
     }
@@ -770,7 +833,7 @@ void loop() {
     {
       if (phaseflag == false)
       {
-        Serial.println("IN rotate for all");
+#define reading Serial.println("IN rotate for all");#endif
         rotatezone1();
       }
     }
@@ -778,7 +841,7 @@ void loop() {
   else if (digitalRead(rezone1) == LOW)     //change pins if reset before ramp
   {
     // pin 10
-    Serial.println("In rezone");
+#define reading Serial.println("In rezone");#endif
     phase();
     if (phaseflag == false)
     {
@@ -811,7 +874,7 @@ void loop() {
     {
       rotatezone1();
     }
-    Serial.println("In laast Turn");
+#define reading Serial.println("In laast Turn");#endif
   }
   else if (digitalRead(turnall) == LOW) // use for rotate when junction is present
   {
@@ -826,7 +889,7 @@ void loop() {
       rotate();
 
     }
-    Serial.println("In all Turn");
+#define reading Serial.println("In all Turn");#endif
   }
   else if (digitalRead(lastck) == LOW)
   {
@@ -841,7 +904,7 @@ void loop() {
       leftrotate();
 
     }
-    Serial.println("In last CheckPoint");
+#define reading Serial.println("In last CheckPoint");#endif
   }
   else if (digitalRead(ckinzone1) == LOW)
   {
@@ -856,7 +919,7 @@ void loop() {
       rightrotate();
 
     }
-    Serial.println("In checkpoint in zone 1");
+#define reading Serial.println("In checkpoint in zone 1");#endif
   }
   else if (digitalRead(lastzone) == LOW)
   { //pin A0
@@ -871,7 +934,7 @@ void loop() {
       cosrightrotate();
 
     }
-    Serial.println("In last Zone");
+#define reading Serial.println("In last Zone");#endif
   }
   else if (digitalRead(belowlast) == LOW)
   {
@@ -885,13 +948,13 @@ void loop() {
     {
       if (rrrotate == false)
       {
-        Serial.println("going in if................");
+#define reading  Serial.println("going in if................");#endif
         rightrotate();
       }
 
       leftrotate();
     }
-    Serial.println("In below last checkpoint");
+#define reading Serial.println("In below last checkpoint");#endif
   }
   else
   {
@@ -899,6 +962,6 @@ void loop() {
     phase();
     adjust();
     //Serial.println(sensor1, BIN);
-    Serial.println("In else");
+#define reading  Serial.println("In else");#endif
   }// return from junctions cases now begins----------------------------------------------------------------------------//////////////////
 }
