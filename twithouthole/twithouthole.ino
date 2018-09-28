@@ -26,7 +26,7 @@
 uint32_t prevread = 0, finalread = 0;
 bool ph = false, phaseflag = false, rotateflag = false, lrotate = false, llrotate = false, ralwaysflag = false, rrotate = false, rrrotate = false;
 int count = 0, countlturn = 0, countrturn = 0;
-int lcorr = -38, rcorr = 8; // Add zero error if required here
+int lcorr = -38, rcorr = 4; // Add zero error if required here
 int left = 0, right = 0;      // Give the base pwm here
 int ltval = left + lcorr; //These are for total value considering the corrected val
 int rtval = right + rcorr;
@@ -289,7 +289,7 @@ void adjust()
   {
     black();
   }
-  else if (sensor1 | B10000001 == B11111111 )
+  else if ((sensor1 | B10000001) == B11111111)
   {
     rightalways();
   }
@@ -308,32 +308,22 @@ void phase()    //call when black line comes on white surface
 #ifdef reading
     Serial.println("in Phase");
 #endif
-    ralwaysflag = true;
   }
   else
   {
     lcorr = -38;
     rcorr = 4;
     delay(100);
-    if (ralwaysflag == true)
-    {
-      if ((sensor1 | B10000001) == B10000001)
-      {
-        rightalways();
-        ph = false;
-      }
-      ralwaysflag = false;
-    }
-    if (ph == true)
-    {
-#ifdef reading
-      Serial.println("out Phase");
-#endif
-      delay(150);
-      ph = false;
-    }
-    phaseflag = false;
   }
+  if (ph == true)
+  {
+#ifdef reading
+    Serial.println("out Phase");
+#endif
+    delay(150);
+    ph = false;
+  }
+  phaseflag = false;
 }
 void black()
 {
